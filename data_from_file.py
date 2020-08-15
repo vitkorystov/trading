@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import datetime
 
 
 class DataFromFile:
@@ -10,9 +11,11 @@ class DataFromFile:
 
     def prepare_data(self):
         for i, row in self.df.iterrows():
-            data_row = {'open': row['<OPEN>'],
-                        'close': row['<OPEN>'],
-                        'high': row['<CLOSE>'],
+            data_row = {'index': i,
+                        'date': datetime.strptime(row['<DATE>'] + ' ' + row['<TIME>'], '%d/%m/%y %H:%M:%S'),
+                        'open': row['<OPEN>'],
+                        'close': row['<CLOSE>'],
+                        'high': row['<HIGH>'],
                         'low': row['<LOW>'],
                         'vol': row['<VOL>']
                         }

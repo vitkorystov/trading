@@ -7,19 +7,19 @@ class Indicators:
 
     # расчет простой скользящей средней
     # матчасть: https://allfi.biz/Forex/TechnicalAnalysis/Trend-Indicators/prostoe-skolzjashhee-srednee.php
-    def sma(self, n):
+    def sma(self, n, round_digit=1):
         sma_res = []
         for i, row in enumerate(self.closes):
             index_from = i - n + 1
             index_to = i + 1
             sma_value = sum(self.closes[index_from: index_to])/n if i >= (n - 1) else -1
-            sma_res.append(sma_value)
+            sma_res.append(round(sma_value, round_digit))
             # print(self.data[i], sma_value)
         return sma_res
 
     #  расчет экспоненциального скользящего среднего
     # матчасть: https://www.youtube.com/watch?v=sjIjhfuu2go
-    def ema(self, n):
+    def ema(self, n, round_digit=1):
         ema_res = []
         alpha = 2/(n + 1)  # весовой коэффициент
         last_ema_value = -1
@@ -35,8 +35,5 @@ class Indicators:
                 ema_value = alpha * self.closes[i] + (1 - alpha)*last_ema_value
                 last_ema_value = ema_value
             # print(self.data[i], ema_value)
-            ema_res.append(ema_value)
+            ema_res.append(round(ema_value, round_digit))
         return ema_res
-
-
-

@@ -1,3 +1,6 @@
 jupyter
 pandas
 xlrd
+matplotlib
+mplfinance
+psycopg2

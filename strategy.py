@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 
 # дата класс для ТЕКУЩИХ параметров
@@ -9,37 +10,83 @@ class Price:
     low: float = 0.0
     close: float = 0.0
     index: int = 0
+    date: datetime = None
+
+
+# статистика
+@dataclass
+class Statistic:
+    profit_deals: int = 0
+    loss_deals: int = 0
+    total_commission: float = 0
+    bank: float = 0
+    bank_with_comm: float = 0
 
 
 class Strategy:
     def __init__(self, data, start_index):
         self.data = data
         self.start_index = start_index
-        self.stop_loss_value = None
-        self.take_profit_value = None
-        self.statistic = {'profit_deals_number': 0,
-                          'loss_deals_number': 0,
-                          'bank': 0
-                          }
+        self.stop_loss_price = None
+        self.take_profit_price = None
+        self.stats = Statistic()
         self.price = Price()
+        # ----------------- параметры -------------------------
+        self.is_print = True
+        self.deal_commission = 0
+        # если сделка завершилась, но нужно сразу открыть новую
+        self.is_open_new_after_closing = True
 
     # условие старта сделки --> покупки/продажи
     # is_buy -> True=buy, False=sell
-    def start_deal(self, is_buy):
+    def is_start_deal(self, is_buy):
         pass
 
     # условие по тейк-профиту - возвращает True/False
-    def take_profit(self, is_buy, start_price):
+    def is_take_profit(self, is_buy, start_price):
         pass
 
     # условие по стоп-лоссу - возвращает True/False
-    def stop_loss(self, is_buy, start_price):
+    def is_stop_loss(self, is_buy, start_price):
         pass
+
+    def print_end_deal(self, deal_type, deal_res, profit, price, date):
+        if self.is_print:
+            print(f'finish-->  deal_type: {deal_type}, closed by: {deal_res}, profit={profit} \n'
+                  f'{price}, date: {date} \n')
+
+    def print_start_deal(self, deal_type, start_price, date):
+        if self.is_print:
+            print(f'start-->  deal_type: {deal_type}, start_price: {start_price},  date: {date}')
+
+    def add_stat(self, profit):
+        if profit >= 0:
+            self.stats.profit_deals += 1
+        else:
+            self.stats.loss_deals += 1
+        self.stats.total_commission += self.deal_commission
+        self.stats.bank += profit
+
+    def run_start_deal(self):
+        deal_type = ''
+        is_in_deal = False
+        if self.is_start_deal(is_buy=True):
+            deal_type = 'buy'
+            is_in_deal = True
+        elif self.is_start_deal(is_buy=False):
+            deal_type = 'sell'
+            is_in_deal = True
+
+        if is_in_deal:
+            start_price = self.price.close
+            self.print_start_deal(deal_type, start_price, self.price.date)
+            return {'start_price': start_price,
+                    'deal_type': deal_type}
 
     def run(self):
         is_in_deal: bool = False
         start_price: float = 0.0
-        deal_type = ''  # buy/sell
+        deal_type: str = ''  # buy/sell
 
         for i, row in enumerate(self.data):
             self.price.open = row['open']
@@ -47,38 +94,54 @@ class Strategy:
             self.price.low = row['low']
             self.price.close = row['close']
             self.price.index = i
+            self.price.date = row["date"]
 
-            # старт сделки - buy
+            # старт сделки
             if not is_in_deal:
-                if self.start_deal(is_buy=True) or self.start_deal(is_buy=False):
-                    deal_type = 'buy' if self.start_deal(is_buy=True) else 'sell'
-                    start_price = self.price.open
+                res_start_deal = self.run_start_deal()
+                if res_start_deal is not None:
                     is_in_deal = True
-                    print('start', self.price, row['date'], deal_type)
+                    start_price = res_start_deal['start_price']
+                    deal_type = res_start_deal['deal_type']
+                    continue
             # завершение сделки - по стоп-лоссу или тейк-профиту
             else:
+                # завершение сделки на покупку (buy)
                 if deal_type == 'buy':
-                    if self.take_profit(is_buy=True, start_price=start_price):
-                        profit = self.take_profit_value - start_price
-                        self.statistic['profit_deals_number'] += 1
-                        self.statistic['bank'] += profit
+
+                    if self.is_stop_loss(is_buy=True, start_price=start_price):
+                        profit = self.stop_loss_price - start_price
+                        self.add_stat(profit)
                         is_in_deal = False
+                        self.print_end_deal(deal_type, 'stop_loss', profit, self.price, self.price.date)
+
+                    elif self.is_take_profit(is_buy=True, start_price=start_price):
+                        profit = self.take_profit_price - start_price
+                        self.add_stat(profit)
+                        is_in_deal = False
+                        self.print_end_deal(deal_type, 'take_profit', profit, self.price, self.price.date)
+
+                # завершение сделки на продажу (sell)
+                else:
+                    if self.is_stop_loss(is_buy=False, start_price=start_price):
+                        profit = start_price - self.stop_loss_price
+                        self.add_stat(profit)
+                        is_in_deal = False
+                        self.print_end_deal(deal_type, 'stop_loss', profit, self.price, self.price.date)
+                    elif self.is_take_profit(is_buy=False, start_price=start_price):
+                        profit = start_price - self.take_profit_price
+                        self.add_stat(profit)
+                        is_in_deal = False
+                        self.print_end_deal(deal_type, 'take_profit', profit, self.price, self.price.date)
+
+                # если сделка завершилась, но можно сразу открыть новую
+                if not is_in_deal and self.is_open_new_after_closing:
+                    res_start_deal = self.run_start_deal()
+                    if res_start_deal is not None:
+                        is_in_deal = True
+                        start_price = res_start_deal['start_price']
+                        deal_type = res_start_deal['deal_type']
                         continue
-                    if self.stop_loss(is_buy=True, start_price=start_price):
-                        profit = start_price - self.stop_loss_value
-                        self.statistic['loss_deals_number'] += 1
-                        self.statistic['bank'] += profit
-                        is_in_deal = False
-                        continue
-                else:  # deal_type='sell'
-                    if self.take_profit(is_buy=False, start_price=start_price):
-                        profit = start_price - self.take_profit_value
-                        self.statistic['profit_deals_number'] += 1
-                        self.statistic['bank'] += profit
-                        is_in_deal = False
-                        continue
-                    if self.stop_loss(is_buy=False, start_price=start_price):
-                        profit = start_price - self.stop_loss_value
-                        self.statistic['loss_deals_number'] += 1
-                        self.statistic['bank'] += profit
-                        is_in_deal = False
+
+        self.stats.total_commission = round(self.stats.total_commission, 2)
+        self.stats.bank_with_comm = self.stats.bank - self.stats.total_commission

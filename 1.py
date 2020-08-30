@@ -1,4 +1,14 @@
 
-l = [0, 1, 2, 3, 4]
 
-print(l[0:3])
+def f1():
+    print('f1')
+    return True
+
+
+def f2():
+    print('f2')
+    return False
+
+
+if f2() & f1():
+    print(1)

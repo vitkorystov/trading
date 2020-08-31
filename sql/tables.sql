@@ -3,7 +3,7 @@ CREATE DATABASE trading;
 
 CREATE TABLE futures (
     id serial primary key,
-    ticker text,
+    ticker varchar(100),
     date timestamp,
     open real,
     high real,
@@ -11,3 +11,5 @@ CREATE TABLE futures (
     close real,
     volume real
 );
+
+

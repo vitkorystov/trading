@@ -1,10 +1,5 @@
-from data_from_file import DataFromFile
-from strategy_with_2ma import StrategyWithMA
-from indicators import Indicators
+from process_data.data_from_file import DataFromFile
 import glob
-import mplfinance as mpf
-
-
 
 file_list = [file for file in glob.glob("futures/1min/*.csv") if 'Si-9.20' in file]
 

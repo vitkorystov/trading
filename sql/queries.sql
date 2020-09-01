@@ -1,6 +1,17 @@
 
 
 --  get daily data
+WITH previous_dates AS (
+SELECT day_date,
+	   LAG (day_date, 1) OVER (ORDER BY day_date) AS previous_date
+FROM (
+	SELECT DISTINCT date::date as day_date
+		FROM futures
+	WHERE ticker='Si-9.20'
+	ORDER BY day_date DESC) AS f
+),
+
+final_res AS (
 SELECT day_date AS date,
        open_row.open AS open,
        close_row.close AS close,
@@ -14,7 +25,10 @@ FROM (SELECT DISTINCT date::date as day_date
       LATERAL (SELECT date,
                       open
                FROM futures
-                   WHERE date::date=f.day_date-1 AND EXTRACT(HOUR FROM date)=19 AND ticker='Si-9.20'
+                   WHERE date::date=(SELECT previous_date
+							       FROM previous_dates
+							   WHERE day_date=f.day_date)
+			             AND EXTRACT(HOUR FROM date)=19 AND ticker='Si-9.20'
                ORDER BY date LIMIT 1
                ) AS open_row,
       LATERAL (SELECT date,
@@ -29,7 +43,9 @@ FROM (SELECT DISTINCT date::date as day_date
                FROM futures
                    WHERE date>=open_row.date AND date<=close_row.date AND ticker='Si-9.20'
               ) AS other_data_row
-ORDER BY day_date DESC;
+ORDER BY day_date)
+
+SELECT * FROM final_res;
 
 --------------------------------------------------
 -----------------  get hourly data ---------------

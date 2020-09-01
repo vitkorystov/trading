@@ -1,5 +1,6 @@
 import os
 import psycopg2
+from psycopg2 import extras
 
 
 class DataBase:
@@ -25,7 +26,7 @@ class DataBase:
         cur.close()
 
     def get_fetch_all(self, query):
-        cur = self.conn.cursor()
+        cur = self.conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute(query)
         res = cur.fetchall()
         cur.close()

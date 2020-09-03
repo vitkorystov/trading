@@ -1,7 +1,7 @@
-from strategy import Strategy
+from strategies.strategy import Strategy
 
 
-class StrategyWithMA(Strategy):
+class StrategyWith2MA(Strategy):
     def __init__(self, data, start_index, take_profit_range, stop_loss_range, delta_limit):
         super().__init__(data=data, start_index=start_index)
         self.ma_short = None

@@ -141,10 +141,13 @@ class DataFromDataBase(DataBase):
         else:
             res = self.minute(ticker=ticker, n=n)
         if res is not None:
-            data_list = []
-            keys_for_plot = ['Date', 'Open', 'Close', 'High', 'Low', 'Volume']
-            data_dict = {key: [] for key in keys_for_plot}
+            keys = ['index', 'date', 'open', 'close', 'high', 'low', 'volume']
+            data_dict = {key: [] for key in keys}
             for i, row in enumerate(res):
+                for key in keys:
+                    value = i if key == 'index' else row[key.lower()]
+                    data_dict[key].append(value)
+                '''
                 data_row = {'index': i,
                             'date': row['date'],
                             'open': row['open'],
@@ -153,32 +156,30 @@ class DataFromDataBase(DataBase):
                             'low': row['low'],
                             'vol': row['volume']
                             }
+                data_list.append(data_row)            
                 print(data_row)
-                for key in keys_for_plot:
-                    data_dict[key].append(row[key.lower()])
-
-                data_list.append(data_row)
-            print(data_dict)
+                '''
+            # print(data_dict)
+            return data_dict
 
 
+            '''
             import pandas as pd
+            keys = ['Date', 'Open', 'Close', 'High', 'Low', 'Volume']
             df = pd.DataFrame(data_dict,
-                              columns=keys_for_plot)
+                              columns=keys)
             df.set_index('Date', inplace=True)
             print(df.head(3))
             print(df.tail(3))
             import mplfinance as mpf
             mpf.plot(df, type='candle')
+            '''
 
-
-
-
-
-db = DataFromDataBase()
+# db = DataFromDataBase()
 # r = db.minute(n=1, ticker='Si-9.20')
 # r = db.hourly(ticker='Si-9.20')
 # print(r[0])
 # print(r[1])
 # print(r[2])
 
-db.get_data(ticker='Si-9.20', period='daily')
+# db.get_data(ticker='Si-9.20', period='daily')

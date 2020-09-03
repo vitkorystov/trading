@@ -5,12 +5,12 @@ from datetime import datetime
 # дата класс для ТЕКУЩИХ параметров
 @dataclass
 class Price:
-    open: float = 0.0
-    high: float = 0.0
-    low: float = 0.0
-    close: float = 0.0
     index: int = 0
     date: datetime = None
+    open: float = 0.0
+    close: float = 0.0
+    high: float = 0.0
+    low: float = 0.0
 
 
 # статистика
@@ -88,13 +88,19 @@ class Strategy:
         start_price: float = 0.0
         deal_type: str = ''  # buy/sell
 
-        for i, row in enumerate(self.data):
-            self.price.open = row['open']
-            self.price.high = row['high']
-            self.price.low = row['low']
-            self.price.close = row['close']
-            self.price.index = i
-            self.price.date = row["date"]
+        for c_index, c_date, c_open, c_close, c_high, c_low in zip(self.data['index'],
+                                                                   self.data['date'],
+                                                                   self.data['open'],
+                                                                   self.data['close'],
+                                                                   self.data['high'],
+                                                                   self.data['low']
+                                                                   ):
+            self.price.index = c_index
+            self.price.date = c_date
+            self.price.open = c_open
+            self.price.close = c_close
+            self.price.high = c_high
+            self.price.low = c_low
 
             # старт сделки
             if not is_in_deal:
@@ -108,7 +114,6 @@ class Strategy:
             else:
                 # завершение сделки на покупку (buy)
                 if deal_type == 'buy':
-
                     if self.is_stop_loss(is_buy=True, start_price=start_price):
                         profit = self.stop_loss_price - start_price
                         self.add_stat(profit)

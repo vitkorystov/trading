@@ -1,27 +1,35 @@
 from process_data.data_from_file import DataFromFile
-import glob
+from process_data.data_from_db import DataFromDataBase
+from tech_analysis.indicators import Indicators
+from strategies.strategy_with_2ma import StrategyWith2MA
 
-file_list = [file for file in glob.glob("futures/1min/*.csv") if 'Si-9.20' in file]
+# data_db = DataFromDataBase()
+data_dict = DataFromDataBase().get_data(period='hourly', ticker='Si-9.20')
 
-file = file_list[0]
-print(file)
-data_from_file = DataFromFile(file=file)
-data = data_from_file.data_list
+# индикаторы
+my_indicators = Indicators(data=data_dict)
+n_long = 5
+n_short = 2
+ma_long = my_indicators.ema(n=n_long)
+ma_short = my_indicators.sma(n=n_short)
 
-df = data_from_file.df
-#df.columns = ['ticker', 'per', 'Date', 'Time',  'Open', 'High', 'Low', 'Close', 'Volume']
-#print(df.head())
+# стратегия с 2 МА
+strategy_ma = StrategyWith2MA(data=data_dict,
+                              start_index=(n_long+n_short+1),
+                              take_profit_range=300,
+                              stop_loss_range=300,
+                              delta_limit=300)
 
-df1 = df.rename(columns={'<DATE>': 'Date',
-                                       '<OPEN>': 'Open',
-                                       '<HIGH>': 'High',
-                                       '<LOW>': 'Low',
-                                       '<CLOSE>': 'Close',
-                                       '<VOL>': 'Volume',
-                                       })
+strategy_ma.set_ma(ma_short=ma_short, ma_long=ma_long)
+strategy_ma.is_print = True
+strategy_ma.deal_commission = 2.13
+strategy_ma.run()
+
+print(strategy_ma.stats)
 
 
-print(df1.head())
+
+
 
 
 '''

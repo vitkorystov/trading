@@ -12,7 +12,7 @@ FROM (
 ),
 
 final_res AS (
-SELECT day_date AS date,
+SELECT day_date::timestamp AS date,
        open_row.open AS open,
        close_row.close AS close,
        other_data_row.high AS high,
@@ -129,3 +129,30 @@ LATERAL (SELECT max(high) AS high,
              WHERE date>=open_row.date AND date<=close_row.date AND ticker='Si-9.20'
          ) AS other_data_row
 ORDER BY date_generator.s_date DESC
+
+
+------------------------------------------------------------
+---- даты срабатывания тейк-профита и стоп-лосса -----------
+------------------------------------------------------------
+
+SELECT
+	date,
+	'low' as target
+FROM
+(SELECT
+ 	date
+ FROM futures
+	WHERE date BETWEEN '2020-09-02 17:01:00' AND '2020-09-02 18:00:00'
+		AND low<=75194 ORDER BY date ASC LIMIT 1
+) as t1
+UNION ALL
+SELECT
+	date,
+	'high' as target
+FROM
+(SELECT
+ 	date
+FROM futures
+	WHERE date BETWEEN '2020-09-02 17:01:00' AND '2020-09-02 18:00:00'
+		AND high>=75727 ORDER BY date ASC LIMIT 1
+) AS t2

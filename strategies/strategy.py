@@ -160,7 +160,7 @@ class Strategy:
                     res_dates = self.db.who_1st_stop_loss_or_take_profit(ticker=self.ticker,
                                                                          date_from=date_from, date_to=date_to,
                                                                          high=high, low=low)
-                    print(res_dates)
+                    print('high=', high, 'low=', low)
                     date_low = None
                     date_high = None
 
@@ -174,29 +174,32 @@ class Strategy:
                     if None not in (date_low, date_to):
 
                         if is_buy:
+                            # take-profit
                             if date_high < date_low:
-                                print('here-------------------')
-                                # take-profit
+                                profit = take_profit_price - start_price
+                                result_end = 'take_profit'
+                                print('buy ------take-profit -------------------')
+                            # stop-loss
                             else:
-                                # stop-loss
-                                pass
+                                profit = stop_loss_price - start_price
+                                result_end = 'stop_loss'
+                                print('buy ------stop-loss -------------------')
+
                         else:
                             if date_high > date_low:
-
+                                print('sell ------take-profit -------------------')
                                 # take-profit
                                 pass
                             else:
                                 # stop-loss
+                                print('sell ------stop-loss -------------------')
                                 pass
+                        is_in_deal = False
+                        self.add_stat(profit)
+                        self.print_end_deal(deal_type, result_end, profit, self.price, self.price.date)
+
                     else:
                         raise Exception('no both dates from self.db.who_1st_stop_loss_or_take_profit()')
-
-
-
-
-
-
-
                     
                     
                     
@@ -226,7 +229,11 @@ class Strategy:
                     if res_start_deal is not None:
                         is_in_deal = True
                         start_price = res_start_deal['start_price']
+                        take_profit_price = res_start_deal['take_profit_price']
+                        stop_loss_price = res_start_deal['stop_loss_price']
                         deal_type = res_start_deal['deal_type']
+
+
 
         self.stats.total_commission = round(self.stats.total_commission, 2)
         self.stats.bank_with_comm = self.stats.bank - self.stats.total_commission

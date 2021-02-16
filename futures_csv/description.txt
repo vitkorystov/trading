@@ -1,0 +1,4 @@
+Источник данных:
+https://www.finam.ru/profile/mosbirzha-fyuchersy/si-3-21-sih1/export/?market=14&em=874140&token=&code=SiH1&apply=0&df=1&mf=5&yf=2020&from=01.06.2020&dt=8&mt=1&yt=2021&to=08.02.2021&p=3&f=SiH1_200601_210208&e=.csv&cn=SiH1&dtf=4&tmf=3&MSOR=0&mstime=on&mstimever=1&sep=1&sep2=1&datf=1&at=1&fsp=1
+
+Скриншот настроек формы в файле settings_screenshot.png

@@ -1,7 +1,7 @@
 from process_data.data_from_file import DataFromFile
 import datetime
 
-file = "futures/1min/SPFB.Si-6.20_200318_200619.csv"
+file = "futures_csv/1min/SPFB.Si-6.20_200318_200619.csv"
 
 
 dff = DataFromFile(file=file)

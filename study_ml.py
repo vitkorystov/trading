@@ -9,7 +9,7 @@ from tech_analysis.candles import Candles
 Исследуем свечные модели: бычье и медвежье поглощения
 """
 
-files = glob.glob("futures/1min/*.csv")
+files = glob.glob("futures_csv/1min/*.csv")
 
 
 for file in files:

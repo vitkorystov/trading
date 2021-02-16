@@ -10,7 +10,7 @@ class DataBase:
         db_name = os.getenv('DB_DATABASE', default='')
         db_user = os.getenv('DB_USER', default='')
         db_pass = os.getenv('DB_PASS', default='')
-        self.conn = psycopg2.connect(f"dbname='{db_name}' user='{db_user}' host='{db_host}' password='{db_pass}'")
+        self.conn = psycopg2.connect(f"dbname='{db_name}' user='{db_user}' host='{db_host}' password='{db_pass}' port='{db_port}'")
 
     def __del__(self):
         self.conn.close()
@@ -47,7 +47,7 @@ class DataBase:
                        FROM 
                        (SELECT 
                            date
-                       FROM futures
+                       FROM futures_csv
                            WHERE date  BETWEEN '{date_from}' AND '{date_to}'
                                AND low<={low} 
                                AND ticker='{ticker}'
@@ -60,7 +60,7 @@ class DataBase:
                        FROM 	
                        (SELECT 
                            date
-                       FROM futures
+                       FROM futures_csv
                            WHERE date BETWEEN '{date_from}' AND '{date_to}'
                                AND high>={high} 
                                AND ticker='{ticker}' 

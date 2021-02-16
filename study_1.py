@@ -8,7 +8,7 @@ import glob
 Исследуем свечные модели: бычье и медвежье поглощения
 """
 
-files = glob.glob("futures/1min/*.csv")
+files = glob.glob("futures_csv/1min/*.csv")
 
 
 # parameters
@@ -37,7 +37,7 @@ res = {'+': 0, '-': 0, 'all': 0}
 bodies = {'pos': 0, 'neg': 0}
 
 for file in files:
-    # file = "futures/5min/SPFB.Si-3.21_200601_210208.csv"
+    # file = "futures_csv/5min/SPFB.Si-3.21_200601_210208.csv"
     dff = DataFromFile(file=file)
     data = dff.data_list
 

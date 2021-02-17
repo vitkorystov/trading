@@ -1,10 +1,10 @@
 CREATE DATABASE trading;
 
-
+-- таблица с котировками для фьючерсов
 CREATE TABLE futures (
     id serial primary key,
     ticker int,
-    timeframe varchar (50),
+    timeframe int,
     date timestamp,
     open real,
     high real,
@@ -14,21 +14,17 @@ CREATE TABLE futures (
     UNIQUE (ticker, timeframe, date)
 );
 
+-- таблица тикеров
 CREATE TABLE tickers (
     id serial primary key,
     name text,
     full_name text,
-    description text
-)
+    description text,
+    UNIQUE (name, full_name)
+);
 
+-- таблица таймфреймов
 CREATE TABLE timeframes (
    id serial primary key,
    timeframe varchar (50) UNIQUE
-)
-
-INSERT INTO
-	timeframes (timeframe)
-VALUES
-	('1m'), ('5m'),	('10m'), ('15m'), ('30m'),
-	('1h'), ('4h'),
-	('1d'), ('1w'), ('1mo');
+);

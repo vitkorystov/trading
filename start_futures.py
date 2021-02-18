@@ -3,7 +3,7 @@ from process_data.data_from_db import DataFromDataBase
 from tech_analysis.indicators import Indicators
 from strategies.strategy_with_2ma import StrategyWith2MA
 
-ticker='Si-9.20'
+ticker = 'Si-9.20'
 
 # data_db = DataFromDataBase()
 data_dict = DataFromDataBase().get_data(period='hourly', ticker=ticker)

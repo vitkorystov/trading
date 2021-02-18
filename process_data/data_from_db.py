@@ -100,7 +100,7 @@ class DataFromDataBase(DataBase):
                     other_data_row.low AS low, 
                     other_data_row.volume AS volume	
                 FROM (SELECT date_trunc('hour', date) as hour_date
-                          FROM futures_csv
+                          FROM futures
                       WHERE ticker='{ticker}'
                           GROUP BY date_trunc('hour', date)
                       ORDER BY date_trunc('hour', date) DESC
@@ -119,7 +119,7 @@ class DataFromDataBase(DataBase):
                 -- close		
                 LATERAL (SELECT date,
                                 close
-                        FROM futures_csv
+                        FROM futures
                            WHERE date=date_generator.s_date+interval '{n} minutes' AND ticker='{ticker}'
                         ORDER BY date LIMIT 1
                         ) AS close_row,
@@ -127,7 +127,7 @@ class DataFromDataBase(DataBase):
                 LATERAL (SELECT max(high) AS high,
                                 min(low) AS low,
                                 sum(volume) as volume
-                         FROM futures_csv
+                         FROM futures
                              WHERE date>=open_row.date AND date<=close_row.date AND ticker='{ticker}'
                          ) AS other_data_row
                 ORDER BY date_generator.s_date""".format(ticker=ticker, n=n)

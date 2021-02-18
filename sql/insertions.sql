@@ -12,3 +12,18 @@ VALUES ('SiH1', 'Si-3.21', 'US-RUB futures with exp data at 03.21')
 ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
 
 
+INSERT INTO tickers (name, full_name, description)
+VALUES ('SiZ0', 'Si-12.20', 'US-RUB futures with exp data at 12.20')
+ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
+
+INSERT INTO tickers (name, full_name, description)
+VALUES ('SiU0', 'Si-9.20', 'US-RUB futures with exp data at 9.20')
+ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
+
+INSERT INTO tickers (name, full_name, description)
+VALUES ('SiM0', 'Si-6.20', 'US-RUB futures with exp data at 6.20')
+ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
+
+INSERT INTO tickers (name, full_name, description)
+VALUES ('SiH0', 'Si-3.20', 'US-RUB futures with exp data at 3.20')
+ON CONFLICT(name, full_name) DO NOTHING RETURNING id;

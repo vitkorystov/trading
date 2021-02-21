@@ -27,3 +27,11 @@ ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
 INSERT INTO tickers (name, full_name, description)
 VALUES ('SiH0', 'Si-3.20', 'US-RUB futures with exp data at 3.20')
 ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
+
+INSERT INTO tickers (name, full_name, description)
+VALUES ('SRH1', 'SBRF-3.21', 'Фьючерсный контракт на обыкновенные акции ПАО Сбербанк')
+ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
+
+INSERT INTO tickers (name, full_name, description)
+VALUES ('SRZ0', 'SBRF-12.20', 'Фьючерсный контракт на обыкновенные акции ПАО Сбербанк')
+ON CONFLICT(name, full_name) DO NOTHING RETURNING id;
